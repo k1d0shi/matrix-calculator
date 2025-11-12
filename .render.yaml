@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: matrix-calculator
+    env: python
+    plan: free
+    region: frankfurt  # можешь изменить, если ты не в Европе
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app123:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+    autoDeploy: true
+    rootDir: ./
