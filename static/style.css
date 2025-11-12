@@ -1,7 +1,6 @@
-/* === Подключение шрифта Advent Pro ExtraExpanded === */
 @import url('https://fonts.googleapis.com/css2?family=Advent+Pro:wght@400;600&display=swap');
 
-/* === Основной стиль страницы === */
+
 body {
     font-family: 'Advent Pro', sans-serif;
     font-stretch: extra-expanded;
@@ -12,7 +11,6 @@ body {
     color: #222;
 }
 
-/* === Заголовок === */
 header {
     background-color: #4CAF50;
     color: white;
@@ -23,7 +21,7 @@ header {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* === Контейнер матриц === */
+
 .matrix-container {
     display: flex;
     justify-content: space-between;
@@ -33,7 +31,7 @@ header {
     position: relative;
 }
 
-/* === Подзаголовки матриц === */
+
 .matrix h2 {
     color: #222;
     font-weight: 600;
@@ -42,14 +40,14 @@ header {
     margin-bottom: 10px;
 }
 
-/* === Ряды матрицы === */
+
 .row {
     display: flex;
     justify-content: center;
     margin: 5px;
 }
 
-/* === Ячейки ввода === */
+
 .cell {
     width: 55px;
     height: 45px;
@@ -68,7 +66,7 @@ header {
     outline: none;
 }
 
-/* === Кнопка обмена матриц === */
+
 .swap-button {
     background-color: #4CAF50;
     color: white;
@@ -86,7 +84,7 @@ header {
     transform: scale(1.05);
 }
 
-/* === Кнопки действий === */
+
 button {
     background-color: #4CAF50;
     color: white;
@@ -105,7 +103,7 @@ button:hover {
     transform: scale(1.03);
 }
 
-/* === Ошибки === */
+
 .error-text {
     color: red;
     font-weight: 600;
@@ -113,7 +111,7 @@ button:hover {
     margin-top: 15px;
 }
 
-/* === Таблица результата === */
+
 table {
     margin: 20px auto;
     border-collapse: collapse;
@@ -126,7 +124,7 @@ td {
     padding: 12px 25px;
 }
 
-/* === Селекты (выпадающие списки) === */
+
 select {
     font-family: 'Advent Pro', sans-serif;
     font-size: 16px;
@@ -141,7 +139,7 @@ select:focus {
     border-color: #4CAF50;
 }
 
-/* === Подписи === */
+
 label {
     font-weight: 600;
     margin-right: 8px;
