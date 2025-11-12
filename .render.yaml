@@ -3,8 +3,8 @@ services:
     name: matrix-calculator
     env: python
     plan: free
-    region: frankfurt  # можешь изменить, если ты не в Европе
-    buildCommand: "pip install -r requirements.txt"
+    region: frankfurt
+    buildCommand: "pip install --upgrade pip && pip install -r ./requirements.txt"
     startCommand: "gunicorn app123:app"
     envVars:
       - key: PYTHON_VERSION
