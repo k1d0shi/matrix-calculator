@@ -32,7 +32,6 @@ def calculate():
         else:
             return jsonify({"error": "Неизвестная операция"})
 
-        # Преобразуем в целые, если возможно
         for i in range(len(result)):
             if isinstance(result[i], list):
                 result[i] = [int(x) if abs(x - round(x)) < 1e-9 else round(x, 3) for x in result[i]]
