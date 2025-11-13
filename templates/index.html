@@ -4,143 +4,150 @@
     <meta charset="UTF-8">
     <title>Калькулятор матриц</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .swap-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 60px;
-        }
-        .swap-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: #4CAF50;
-            border: none;
-            padding: 0;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            cursor: pointer;
-        }
-        .swap-button img {
-            display: block;
-            width: 34px;
-            height: 34px;
-            margin: 0;
-            vertical-align: middle;
-        }
-    </style>
 </head>
 <body>
-    <header>Калькулятор матриц</header>
+<header>
+    <h1>Калькулятор матриц</h1>
+</header>
 
-    <form method="POST" action="/">
-        <div class="container">
-            <div class="matrix">
-                <h2>Матрица A</h2>
-                <label>Размер:
-                    <select name="size_a" id="size_a" onchange="updateMatrix('A')">
-                        <option value="2">2×2</option>
-                        <option value="3" selected>3×3</option>
-                        <option value="4">4×4</option>
-                    </select>
-                </label>
-                <div id="matrixA"></div>
-            </div>
+<main>
+    <div class="matrix-container"
+         style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: 0 auto; position: relative;">
 
-            <div class="swap-container">
-                <button type="button" class="swap-button" onclick="swapMatrices()">
-                    <img src="https://cdn-icons-png.flaticon.com/512/860/860790.png" alt="swap">
-                </button>
-            </div>
-
-            <div class="matrix">
-                <h2>Матрица B</h2>
-                <label>Размер:
-                    <select name="size_b" id="size_b" onchange="updateMatrix('B')">
-                        <option value="2">2×2</option>
-                        <option value="3" selected>3×3</option>
-                        <option value="4">4×4</option>
-                    </select>
-                </label>
-                <div id="matrixB"></div>
-            </div>
+        <!-- Матрица A -->
+        <div class="matrix left-matrix">
+            <h2>Матрица A</h2>
+            <label>Размер:
+                <select id="sizeA" onchange="generateMatrix('A')">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                    <option value="4">4x4</option>
+                </select>
+            </label>
+            <div id="matrixA"></div>
         </div>
 
-        <div class="controls">
-            <label for="operation"><b>Операция:</b></label>
-            <select name="operation" id="operation">
+        <!-- 🔁 Кнопка обмена -->
+        <button onclick="swapMatrices()" class="swap-button"
+                style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px;">
+            🔁
+        </button>
+
+        <!-- Матрица B -->
+        <div class="matrix right-matrix">
+            <h2>Матрица B</h2>
+            <label>Размер:
+                <select id="sizeB" onchange="generateMatrix('B')">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                    <option value="4">4x4</option>
+                </select>
+            </label>
+            <div id="matrixB"></div>
+        </div>
+    </div>
+
+    <div class="operation">
+        <label>Операция:
+            <select id="operation">
                 <option value="add">A + B (сложение)</option>
-                <option value="subtract">A − B (вычитание)</option>
-                <option value="multiply">A × B (умножение)</option>
-                <option value="inverse_A">A⁻¹ (обратная A)</option>
-                <option value="inverse_B">B⁻¹ (обратная B)</option>
-                <option value="rank_A">Ранг матрицы A</option>
-                <option value="rank_B">Ранг матрицы B</option>
-                <option value="divisor_A">НОД матрицы A</option>
-                <option value="divisor_B">НОД матрицы B</option>
+                <option value="sub">A - B (вычитание)</option>
+                <option value="mul">A × B (умножение)</option>
+                <option value="divisor_A">det A</option>
+                <option value="divisor_B">det B</option>
+                <option value="rankA">Ранг A</option>
+                <option value="rankB">Ранг B</option>
+                <option value="invA">A⁻¹ (обратная матрица)</option>
+                <option value="invB">B⁻¹ (обратная матрица)</option>
             </select>
-            <button type="submit">Вычислить</button>
-        </div>
+        </label>
+        <button onclick="calculate()">Вычислить</button>
+    </div>
 
-        {% if error %}
-        <div class="result error">
-            <h3>Ошибка:</h3>
-            <p>{{ error }}</p>
-        </div>
-        {% endif %}
+    <div id="result"></div>
+</main>
 
-        {% if result is not none %}
-        <div class="result">
-            <h3>Результат:</h3>
-            <p>{{ result }}</p>
-        </div>
-        {% endif %}
-    </form>
-
-    <script>
-        function createMatrixInputs(id, size) {
-            let matrixDiv = document.getElementById("matrix" + id);
-            matrixDiv.innerHTML = "";
-            for (let i = 0; i < size; i++) {
-                for (let j = 0; j < size; j++) {
-                    let input = document.createElement("input");
-                    input.type = "number";
-                    input.name = id + i + j;
-                    input.value = 0;
-                    input.step = "any";
-                    matrixDiv.appendChild(input);
-                }
-                matrixDiv.appendChild(document.createElement("br"));
+<script>
+    // Создание полей для матрицы
+    function generateMatrix(id) {
+        const size = parseInt(document.getElementById("size" + id).value);
+        const container = document.getElementById("matrix" + id);
+        container.innerHTML = "";
+        for (let i = 0; i < size; i++) {
+            const row = document.createElement("div");
+            row.classList.add("row");
+            for (let j = 0; j < size; j++) {
+                const input = document.createElement("input");
+                input.type = "number";
+                input.value = "0";
+                input.classList.add("cell");
+                row.appendChild(input);
             }
+            container.appendChild(row);
         }
+    }
 
-        function updateMatrix(id) {
-            let size = parseInt(document.getElementById("size_" + id.toLowerCase()).value);
-            createMatrixInputs(id, size);
+    // Сбор данных матрицы
+    function getMatrix(id) {
+        const inputs = document.querySelectorAll(`#matrix${id} input`);
+        const size = Math.sqrt(inputs.length);
+        const matrix = [];
+        for (let i = 0; i < size; i++) {
+            const row = [];
+            for (let j = 0; j < size; j++) {
+                const value = parseFloat(inputs[i * size + j].value);
+                row.push(isNaN(value) ? 0 : value);
+            }
+            matrix.push(row);
         }
+        return matrix;
+    }
 
-        function swapMatrices() {
-            const aArea = document.getElementById("matrixA").innerHTML;
-            const bArea = document.getElementById("matrixB").innerHTML;
-            document.getElementById("matrixA").innerHTML = bArea;
-            document.getElementById("matrixB").innerHTML = aArea;
-
-            // также меняем значения size
-            const sizeSelectA = document.getElementById("size_a");
-            const sizeSelectB = document.getElementById("size_b");
-            const tempSize = sizeSelectA.value;
-            sizeSelectA.value = sizeSelectB.value;
-            sizeSelectB.value = tempSize;
+    // Обмен матриц
+    function swapMatrices() {
+        const aInputs = document.querySelectorAll("#matrixA input");
+        const bInputs = document.querySelectorAll("#matrixB input");
+        if (aInputs.length !== bInputs.length) {
+            alert("Матрицы должны быть одинакового размера!");
+            return;
         }
+        for (let i = 0; i < aInputs.length; i++) {
+            const tmp = aInputs[i].value;
+            aInputs[i].value = bInputs[i].value;
+            bInputs[i].value = tmp;
+        }
+    }
 
-        window.onload = function() {
-            updateMatrix('A');
-            updateMatrix('B');
-        };
-    </script>
+    // Отправка данных на сервер Flask
+    async function calculate() {
+        const A = getMatrix("A");
+        const B = getMatrix("B");
+        const operation = document.getElementById("operation").value;
+
+        const response = await fetch("/calculate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({A, B, operation})
+        });
+
+        const data = await response.json();
+        const resultDiv = document.getElementById("result");
+
+        if (data.error) {
+            resultDiv.innerHTML = `<p class="error-text">${data.error}</p>`;
+        } else {
+            let html = "<h2>Результат:</h2><table>";
+            data.result.forEach(row => {
+                html += "<tr>" + row.map(x => `<td>${x}</td>`).join("") + "</tr>";
+            });
+            html += "</table>";
+            resultDiv.innerHTML = html;
+        }
+    }
+
+    // Инициализация матриц при загрузке
+    generateMatrix("A");
+    generateMatrix("B");
+</script>
 </body>
 </html>

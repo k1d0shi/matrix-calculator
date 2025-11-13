@@ -1,86 +1,68 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import numpy as np
 import os
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    result = None
-    error = None
+    return render_template("index.html")
 
-    if request.method == "POST":
-        try:
-            # получаем размеры
-            size_a = int(request.form.get("size_a", 2))
-            size_b = int(request.form.get("size_b", 2))
+@app.route("/calculate", methods=["POST"])
+def calculate():
+    try:
+        data = request.get_json()
+        A = np.array(data.get("A"))
+        B = np.array(data.get("B"))
+        op = data.get("operation")
 
-            # считываем матрицы из формы
-            A = np.zeros((size_a, size_a))
-            B = np.zeros((size_b, size_b))
+        # --- Арифметические операции ---
+        if op == "add":
+            result = (A + B).tolist()
+        elif op == "sub":
+            result = (A - B).tolist()
+        elif op == "mul":
+            result = np.dot(A, B).tolist()
 
-            for i in range(size_a):
-                for j in range(size_a):
-                    A[i, j] = float(request.form.get(f"A{i}{j}", 0))
+        # --- Определители ---
+        elif op == "det_a":
+            result = [[round(np.linalg.det(A), 3)]]
+        elif op == "det_b":
+            result = [[round(np.linalg.det(B), 3)]]
 
-            for i in range(size_b):
-                for j in range(size_b):
-                    B[i, j] = float(request.form.get(f"B{i}{j}", 0))
+        # --- Ранги ---
+        elif op == "rankA":
+            result = [[np.linalg.matrix_rank(A)]]
+        elif op == "rankB":
+            result = [[np.linalg.matrix_rank(B)]]
 
-            operation = request.form.get("operation")
+        # --- Обратные матрицы ---
+        elif op == "invA":
+            if np.linalg.det(A) == 0:
+                return jsonify({"error": "Матрица A вырождена, обратной не существует"})
+            result = np.linalg.inv(A).tolist()
+        elif op == "invB":
+            if np.linalg.det(B) == 0:
+                return jsonify({"error": "Матрица B вырождена, обратной не существует"})
+            result = np.linalg.inv(B).tolist()
 
-            # выполняем операции
-            if operation == "add":
-                if A.shape != B.shape:
-                    raise ValueError("Матрицы должны быть одинакового размера для сложения.")
-                result = A + B
+        else:
+            return jsonify({"error": "Неизвестная операция"})
 
-            elif operation == "subtract":
-                if A.shape != B.shape:
-                    raise ValueError("Матрицы должны быть одинакового размера для вычитания.")
-                result = A - B
-
-            elif operation == "multiply":
-                if A.shape[1] != B.shape[0]:
-                    raise ValueError("Число столбцов A должно равняться числу строк B для умножения.")
-                result = A.dot(B)
-
-            elif operation == "inverse_A":
-                if A.shape[0] != A.shape[1]:
-                    raise ValueError("Матрица A должна быть квадратной.")
-                result = np.linalg.inv(A)
-
-            elif operation == "inverse_B":
-                if B.shape[0] != B.shape[1]:
-                    raise ValueError("Матрица B должна быть квадратной.")
-                result = np.linalg.inv(B)
-
-            elif operation == "rank_A":
-                result = np.linalg.matrix_rank(A)
-
-            elif operation == "rank_B":
-                result = np.linalg.matrix_rank(B)
-
-            elif operation == "divisor_A":
-                A_int = A.astype(int)
-                divisor_A = np.gcd.reduce(A_int.flatten())
-                result = f"Наибольший общий делитель элементов матрицы A: {divisor_A}"
-
-            elif operation == "divisor_B":
-                B_int = B.astype(int)
-                divisor_B = np.gcd.reduce(B_int.flatten())
-                result = f"Наибольший общий делитель элементов матрицы B: {divisor_B}"
-
+        # --- Округление и целые числа ---
+        for i in range(len(result)):
+            if isinstance(result[i], list):
+                result[i] = [int(x) if abs(x - round(x)) < 1e-9 else round(x, 3) for x in result[i]]
             else:
-                raise ValueError("Неизвестная операция.")
+                result[i] = int(result[i]) if abs(result[i] - round(result[i])) < 1e-9 else round(result[i], 3)
 
-        except Exception as err:
-            error = str(err)
+        return jsonify({"result": result})
 
-    return render_template("index.html",
-                           result=result,
-                           error=error)
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
