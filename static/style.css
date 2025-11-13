@@ -79,9 +79,32 @@ header {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
+.swap-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
 .swap-button:hover {
-    background-color: #43a047;
     transform: scale(1.05);
+}
+
+.swap-button img {
+    display: block;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    vertical-align: middle;
 }
 
 
