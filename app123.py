@@ -22,17 +22,14 @@ def calculate():
             result = (A - B).tolist()
         elif op == "mul":
             result = np.dot(A, B).tolist()
-
-        elif op == "det A":
-            result = [[round(np.linalg.det(A), 3)]]
-        elif op == "det B":
-            result = [[round(np.linalg.det(B), 3)]]
-
+        elif op == "transposeA":
+            result = A.T.tolist()
+        elif op == "transposeB":
+            result = B.T.tolist()
         elif op == "rankA":
             result = [[np.linalg.matrix_rank(A)]]
         elif op == "rankB":
             result = [[np.linalg.matrix_rank(B)]]
-
         elif op == "invA":
             if np.linalg.det(A) == 0:
                 return jsonify({"Ошибка": "Матрица A вырождена, обратной не существует"})
