@@ -22,6 +22,12 @@ def calculate():
             result = (A - B).tolist()
         elif op == "mul":
             result = np.dot(A, B).tolist()
+        elif op == "detA":
+            detA = np.linalg.det(A)
+            result = [[int(detA) if abs(detA - round(detA)) < 1e-9 else round(detA, 5)]]
+        elif op == "detB":
+            detB = np.linalg.det(B)
+            result = [[int(detB) if abs(detB - round(detB)) < 1e-9 else round(detB, 5)]]
         elif op == "transposeA":
             result = A.T.tolist()
         elif op == "transposeB":
