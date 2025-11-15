@@ -50,8 +50,8 @@
                 <option value="add">A + B (сложение)</option>
                 <option value="sub">A - B (вычитание)</option>
                 <option value="mul">A × B (умножение)</option>
-                <option value="detA">det(A) </option>
-                <option value="detB">det(B) </option>
+                <option value="detA">det(A)</option>
+                <option value="detB">det(B)</option>
                 <option value="transposeA">Aᵀ</option>
                 <option value="transposeB">Bᵀ</option>
                 <option value="rankA">Ранг (A)</option>
@@ -83,6 +83,9 @@
             }
             container.appendChild(row);
         }
+
+        // Добавляем авто-выделение для новых полей
+        enableAutoSelect();
     }
 
     function getMatrix(id) {
@@ -140,8 +143,18 @@
         }
     }
 
+    function enableAutoSelect() {
+        document.querySelectorAll("input[type='number']").forEach(function (input) {
+            input.addEventListener("focus", function () {
+                this.select();
+            });
+        });
+    }
+
     generateMatrix("A");
     generateMatrix("B");
+    enableAutoSelect();
 </script>
+
 </body>
 </html>
