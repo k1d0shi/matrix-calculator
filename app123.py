@@ -16,7 +16,6 @@ def calculate():
         B = np.array(data.get("B"))
         op = data.get("operation")
 
-        # --- Арифметические операции ---
         if op == "add":
             result = (A + B).tolist()
         elif op == "sub":
@@ -24,32 +23,28 @@ def calculate():
         elif op == "mul":
             result = np.dot(A, B).tolist()
 
-        # --- Определители ---
-        elif op == "det_a":
+        elif op == "det A":
             result = [[round(np.linalg.det(A), 3)]]
-        elif op == "det_b":
+        elif op == "det B":
             result = [[round(np.linalg.det(B), 3)]]
 
-        # --- Ранги ---
         elif op == "rankA":
             result = [[np.linalg.matrix_rank(A)]]
         elif op == "rankB":
             result = [[np.linalg.matrix_rank(B)]]
 
-        # --- Обратные матрицы ---
         elif op == "invA":
             if np.linalg.det(A) == 0:
-                return jsonify({"error": "Матрица A вырождена, обратной не существует"})
+                return jsonify({"Ошибка": "Матрица A вырождена, обратной не существует"})
             result = np.linalg.inv(A).tolist()
         elif op == "invB":
             if np.linalg.det(B) == 0:
-                return jsonify({"error": "Матрица B вырождена, обратной не существует"})
+                return jsonify({"Ошибка": "Матрица B вырождена, обратной не существует"})
             result = np.linalg.inv(B).tolist()
 
         else:
             return jsonify({"error": "Неизвестная операция"})
 
-        # --- Округление и целые числа ---
         for i in range(len(result)):
             if isinstance(result[i], list):
                 result[i] = [int(x) if abs(x - round(x)) < 1e-9 else round(x, 3) for x in result[i]]

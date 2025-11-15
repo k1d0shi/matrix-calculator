@@ -14,7 +14,6 @@
     <div class="matrix-container"
          style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: 0 auto; position: relative;">
 
-        <!-- Матрица A -->
         <div class="matrix left-matrix">
             <h2>Матрица A</h2>
             <label>Размер:
@@ -27,13 +26,11 @@
             <div id="matrixA"></div>
         </div>
 
-        <!-- 🔁 Кнопка обмена -->
         <button onclick="swapMatrices()" class="swap-button"
                 style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px;">
             🔁
         </button>
 
-        <!-- Матрица B -->
         <div class="matrix right-matrix">
             <h2>Матрица B</h2>
             <label>Размер:
@@ -53,8 +50,8 @@
                 <option value="add">A + B (сложение)</option>
                 <option value="sub">A - B (вычитание)</option>
                 <option value="mul">A × B (умножение)</option>
-                <option value="divisor_A">det A</option>
-                <option value="divisor_B">det B</option>
+                <option value="det a">det A</option>
+                <option value="det b">det B</option>
                 <option value="rankA">Ранг A</option>
                 <option value="rankB">Ранг B</option>
                 <option value="invA">A⁻¹ (обратная матрица)</option>
@@ -68,7 +65,6 @@
 </main>
 
 <script>
-    // Создание полей для матрицы
     function generateMatrix(id) {
         const size = parseInt(document.getElementById("size" + id).value);
         const container = document.getElementById("matrix" + id);
@@ -87,7 +83,6 @@
         }
     }
 
-    // Сбор данных матрицы
     function getMatrix(id) {
         const inputs = document.querySelectorAll(`#matrix${id} input`);
         const size = Math.sqrt(inputs.length);
@@ -103,7 +98,6 @@
         return matrix;
     }
 
-    // Обмен матриц
     function swapMatrices() {
         const aInputs = document.querySelectorAll("#matrixA input");
         const bInputs = document.querySelectorAll("#matrixB input");
@@ -118,7 +112,6 @@
         }
     }
 
-    // Отправка данных на сервер Flask
     async function calculate() {
         const A = getMatrix("A");
         const B = getMatrix("B");
@@ -145,7 +138,6 @@
         }
     }
 
-    // Инициализация матриц при загрузке
     generateMatrix("A");
     generateMatrix("B");
 </script>
