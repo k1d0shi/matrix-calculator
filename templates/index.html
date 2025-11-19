@@ -4,6 +4,59 @@
     <meta charset="UTF-8">
     <title>Калькулятор матриц</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Небольшие локальные стили для шага/аккордеона и кнопки решения */
+        .result-container {
+            width: 80%;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .solution-toggle {
+            display: inline-block;
+            margin: 12px 0;
+            cursor: pointer;
+            color: #ffffff;
+            background: #4CAF50;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .solution-panel {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto 0;
+            text-align: left;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: none; /* скрыта по умолчанию */
+            background: #fafafa;
+        }
+        .solution-panel ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .solution-panel li {
+            margin: 6px 0;
+            line-height: 1.4;
+        }
+        .error-text {
+            color: #c0392b;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        table.result-table {
+            margin: 12px auto;
+            border-collapse: collapse;
+        }
+        table.result-table td {
+            border: 1px solid #444;
+            padding: 8px 14px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -11,9 +64,7 @@
 </header>
 
 <main>
-    <div class="matrix-container"
-         style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: 0 auto; position: relative;">
-
+    <div class="matrix-container" style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: 20px auto; position: relative;">
         <div class="matrix left-matrix">
             <h2>Матрица A</h2>
             <label>Размер:
@@ -26,8 +77,7 @@
             <div id="matrixA"></div>
         </div>
 
-        <button onclick="swapMatrices()" class="swap-button"
-                style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px;">
+        <button onclick="swapMatrices()" class="swap-button" style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px; width:70px; height:70px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0;">
             🔁
         </button>
 
@@ -44,29 +94,35 @@
         </div>
     </div>
 
-    <div class="operation">
+    <div class="operation" style="text-align:center; margin-top: 10px;">
         <label>Операция:
             <select id="operation">
                 <option value="add">A + B (сложение)</option>
                 <option value="sub">A - B (вычитание)</option>
                 <option value="mul">A × B (умножение)</option>
-                <option value="detA">det(A)</option>
-                <option value="detB">det(B)</option>
-                <option value="transposeA">Aᵀ</option>
-                <option value="transposeB">Bᵀ</option>
+
+                <option value="transposeA">Aᵀ (транспонирование A)</option>
+                <option value="transposeB">Bᵀ (транспонирование B)</option>
+
                 <option value="rankA">Ранг (A)</option>
                 <option value="rankB">Ранг (B)</option>
-                <option value="invA">A⁻¹ (обратная матрица)</option>
-                <option value="invB">B⁻¹ (обратная матрица)</option>
+
+                <option value="detA">det(A)</option>
+                <option value="detB">det(B)</option>
+
+                <option value="invA">A⁻¹ (обратная A)</option>
+                <option value="invB">B⁻¹ (обратная B)</option>
             </select>
         </label>
-        <button onclick="calculate()">Вычислить</button>
+        <button onclick="calculate()" style="margin-left:10px; padding:8px 14px; font-weight:600;">Вычислить</button>
     </div>
 
-    <div id="result"></div>
+    <!-- контейнер результата и кнопки "Посмотреть решение" -->
+    <div id="resultArea" class="result-container" aria-live="polite"></div>
 </main>
 
 <script>
+    // --- генерация полей матрицы
     function generateMatrix(id) {
         const size = parseInt(document.getElementById("size" + id).value);
         const container = document.getElementById("matrix" + id);
@@ -79,15 +135,18 @@
                 input.type = "number";
                 input.value = "0";
                 input.classList.add("cell");
+                input.style.width = "60px";
+                input.style.height = "36px";
+                input.style.margin = "4px";
+                input.style.textAlign = "center";
                 row.appendChild(input);
             }
             container.appendChild(row);
         }
-
-        // Добавляем авто-выделение для новых полей
         enableAutoSelect();
     }
 
+    // --- получение матрицы в виде массива чисел
     function getMatrix(id) {
         const inputs = document.querySelectorAll(`#matrix${id} input`);
         const size = Math.sqrt(inputs.length);
@@ -103,6 +162,7 @@
         return matrix;
     }
 
+    // --- обмен матрицами
     function swapMatrices() {
         const aInputs = document.querySelectorAll("#matrixA input");
         const bInputs = document.querySelectorAll("#matrixB input");
@@ -115,46 +175,101 @@
             aInputs[i].value = bInputs[i].value;
             bInputs[i].value = tmp;
         }
+        // Меняем размеры местами
+        const sa = document.getElementById("sizeA");
+        const sb = document.getElementById("sizeB");
+        const tv = sa.value;
+        sa.value = sb.value;
+        sb.value = tv;
     }
 
+    // --- отправка на сервер и рендер результата + шаги
     async function calculate() {
         const A = getMatrix("A");
         const B = getMatrix("B");
         const operation = document.getElementById("operation").value;
 
-        const response = await fetch("/calculate", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({A, B, operation})
-        });
+        const resultArea = document.getElementById("resultArea");
+        resultArea.innerHTML = "<p>Вычисляем...</p>";
 
-        const data = await response.json();
-        const resultDiv = document.getElementById("result");
-
-        if (data.error) {
-            resultDiv.innerHTML = `<p class="error-text">${data.error}</p>`;
-        } else {
-            let html = "<h2>Результат:</h2><table>";
-            data.result.forEach(row => {
-                html += "<tr>" + row.map(x => `<td>${x}</td>`).join("") + "</tr>";
+        try {
+            const response = await fetch("/calculate", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({A, B, operation})
             });
-            html += "</table>";
-            resultDiv.innerHTML = html;
+
+            const data = await response.json();
+            if (data.error) {
+                resultArea.innerHTML = `<p class="error-text">${data.error}</p>`;
+                return;
+            }
+
+            // Построим HTML результата
+            let html = "";
+
+            // Кнопка смотреть решение
+            html += `<button id="toggleSolution" class="solution-toggle">Посмотреть решение</button>`;
+
+            // Результат (таблица)
+            html += `<div id="resultBox">`;
+            html += "<h3>Результат:</h3>";
+            html += `<table class="result-table">`;
+            data.result.forEach(row => {
+                html += "<tr>";
+                row.forEach(c => {
+                    html += `<td>${c}</td>`;
+                });
+                html += "</tr>";
+            });
+            html += `</table>`;
+            html += `</div>`;
+
+            // Панель шагов (по-умолчанию скрыта)
+            html += `<div id="solutionPanel" class="solution-panel"><h4>Пошаговое решение:</h4><ol>`;
+            data.steps.forEach(step => {
+                // экранируем спецсимволы простым заменой
+                const safe = String(step).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                html += `<li>${safe}</li>`;
+            });
+            html += `</ol></div>`;
+
+            resultArea.innerHTML = html;
+
+            // подключим toggle
+            const toggleBtn = document.getElementById("toggleSolution");
+            const panel = document.getElementById("solutionPanel");
+            toggleBtn.addEventListener("click", function () {
+                if (panel.style.display === "none" || panel.style.display === "") {
+                    panel.style.display = "block";
+                    toggleBtn.textContent = "Скрыть решение";
+                    // мягкая прокрутка к панели
+                    panel.scrollIntoView({behavior: "smooth", block: "start"});
+                } else {
+                    panel.style.display = "none";
+                    toggleBtn.textContent = "Посмотреть решение";
+                }
+            });
+
+        } catch (err) {
+            resultArea.innerHTML = `<p class="error-text">Ошибка: ${err}</p>`;
         }
     }
 
+    // --- авто-выделение при фокусе
     function enableAutoSelect() {
         document.querySelectorAll("input[type='number']").forEach(function (input) {
-            input.addEventListener("focus", function () {
-                this.select();
-            });
+            // удаляем старые слушатели чтобы не дублировались
+            input.onfocus = function () { this.select(); };
+            // также выделение при двойном клике
+            input.ondblclick = function () { this.select(); };
         });
     }
 
+    // инициализация
     generateMatrix("A");
     generateMatrix("B");
     enableAutoSelect();
 </script>
-
 </body>
 </html>
