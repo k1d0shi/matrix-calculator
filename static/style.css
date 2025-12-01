@@ -161,8 +161,9 @@ label {
 }
 
 
-.gradient-btn {
-    background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+/* === Градиент для кнопок (как у шапки) === */
+.gradient-btn, .solution-toggle {
+    background-image: linear-gradient(to right, #1e7a32, #8fe33a);
     color: white;
     border: none;
     padding: 10px 18px;
@@ -171,17 +172,28 @@ label {
     font-weight: 700;
     transition: 0.25s;
 }
-
-.gradient-btn:hover {
+.gradient-btn:hover,
+.solution-toggle:hover {
     opacity: 0.85;
 }
 
+/* === Убираем градиент с select === */
+select,
 .gradient-select {
-    background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
-    color: white;
-    border: none;
+    background: white !important;
+    color: #222 !important;
+    border: 1px solid #aaa !important;
+    border-radius: 6px;
     padding: 6px 10px;
-    border-radius: 5px;
-    font-weight: 600;
-    cursor: pointer;
+}
+
+/* === Логотип MATRIXa — без тени, последняя буква маленькая === */
+.logo-title {
+    font-family: 'Alfa Slab One', serif;
+    font-size: 90px;
+    color: white;
+    letter-spacing: 3px;
+    margin: 0;
+    text-transform: none; /* оставляем регистр как написано */
+    text-shadow: none !important; /* УБРАТЬ тень */
 }
