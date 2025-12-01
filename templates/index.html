@@ -2,10 +2,40 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Калькулятор матриц</title>
+    <title>MATRIXa</title>
+
+    <!-- Шрифт для логотипа -->
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
     <style>
-        /* Небольшие локальные стили для шага/аккордеона и кнопки решения */
+
+        /* ---- Градиентная кнопка и select ---- */
+        .gradient-btn {
+            background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+        .gradient-btn:hover {
+            opacity: 0.85;
+        }
+        .gradient-select {
+            background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ---- Стили решения ---- */
         .result-container {
             width: 80%;
             margin: 20px auto;
@@ -31,7 +61,7 @@
             border-radius: 6px;
             padding: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            display: none; /* скрыта по умолчанию */
+            display: none;
             background: #fafafa;
         }
         .solution-panel ol {
@@ -42,11 +72,6 @@
             margin: 6px 0;
             line-height: 1.4;
         }
-        .error-text {
-            color: #c0392b;
-            font-weight: 700;
-            margin-top: 10px;
-        }
         table.result-table {
             margin: 12px auto;
             border-collapse: collapse;
@@ -56,19 +81,42 @@
             padding: 8px 14px;
             font-size: 16px;
         }
+
+        /* ---- НОВЫЕ СТИЛИ ШАПКИ ---- */
+        header {
+            width: 100%;
+            padding: 25px 40px;
+            background-image: linear-gradient(to right, #1e7a32, #8fe33a);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .logo-title {
+            font-family: 'Alfa Slab One', serif;
+            font-size: 90px;
+            color: white;
+            letter-spacing: 3px;
+            margin: 0;
+            text-transform: uppercase;
+            text-shadow: 0 3px 5px rgba(0,0,0,0.3);
+        }
+
     </style>
 </head>
 <body>
+
 <header>
     <h1 class="logo-title">MATRIXa</h1>
 </header>
 
 <main>
-    <div class="matrix-container" style="display: flex; justify-content: space-between; align-items: center; width: 80%; margin: 20px auto; position: relative;">
+
+    <div class="matrix-container" style="display:flex; justify-content:space-between; align-items:center; width:80%; margin:20px auto; position:relative;">
+
         <div class="matrix left-matrix">
             <h2>Матрица A</h2>
             <label>Размер:
-                <select id="sizeA" onchange="generateMatrix('A')">
+                <select id="sizeA" onchange="generateMatrix('A')" class="gradient-select">
                     <option value="2">2x2</option>
                     <option value="3" selected>3x3</option>
                     <option value="4">4x4</option>
@@ -77,14 +125,15 @@
             <div id="matrixA"></div>
         </div>
 
-        <button onclick="swapMatrices()" class="swap-button" style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px; width:70px; height:70px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0;">
+        <button onclick="swapMatrices()" class="swap-button"
+                style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:30px; width:70px; height:70px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; padding:0;">
             🔁
         </button>
 
         <div class="matrix right-matrix">
             <h2>Матрица B</h2>
             <label>Размер:
-                <select id="sizeB" onchange="generateMatrix('B')">
+                <select id="sizeB" onchange="generateMatrix('B')" class="gradient-select">
                     <option value="2">2x2</option>
                     <option value="3" selected>3x3</option>
                     <option value="4">4x4</option>
@@ -94,35 +143,33 @@
         </div>
     </div>
 
-    <div class="operation" style="text-align:center; margin-top: 10px;">
+    <div class="operation" style="text-align:center; margin-top:10px;">
         <label>Операция:
-            <select id="operation">
+            <select id="operation" class="gradient-select">
                 <option value="add">A + B (сложение)</option>
                 <option value="sub">A - B (вычитание)</option>
                 <option value="mul">A × B (умножение)</option>
-
                 <option value="transposeA">Aᵀ (транспонирование A)</option>
                 <option value="transposeB">Bᵀ (транспонирование B)</option>
-
                 <option value="rankA">Ранг (A)</option>
                 <option value="rankB">Ранг (B)</option>
-
                 <option value="detA">det(A)</option>
                 <option value="detB">det(B)</option>
-
                 <option value="invA">A⁻¹ (обратная A)</option>
                 <option value="invB">B⁻¹ (обратная B)</option>
             </select>
         </label>
+
         <button onclick="calculate()" class="gradient-btn">Вычислить</button>
     </div>
 
-
-    <div id="resultArea" class="result-container" aria-live="polite"></div>
+    <div id="resultArea" class="result-container"></div>
 </main>
+
 
 <script>
 
+    /* --- Генерация матриц --- */
     function generateMatrix(id) {
         const size = parseInt(document.getElementById("size" + id).value);
         const container = document.getElementById("matrix" + id);
@@ -146,7 +193,7 @@
         enableAutoSelect();
     }
 
-
+    /* --- Получение матрицы --- */
     function getMatrix(id) {
         const inputs = document.querySelectorAll(`#matrix${id} input`);
         const size = Math.sqrt(inputs.length);
@@ -162,7 +209,7 @@
         return matrix;
     }
 
-
+    /* --- Поменять местами матрицы --- */
     function swapMatrices() {
         const aInputs = document.querySelectorAll("#matrixA input");
         const bInputs = document.querySelectorAll("#matrixB input");
@@ -171,19 +218,15 @@
             return;
         }
         for (let i = 0; i < aInputs.length; i++) {
-            const tmp = aInputs[i].value;
-            aInputs[i].value = bInputs[i].value;
-            bInputs[i].value = tmp;
+            [aInputs[i].value, bInputs[i].value] = [bInputs[i].value, aInputs[i].value];
         }
 
         const sa = document.getElementById("sizeA");
         const sb = document.getElementById("sizeB");
-        const tv = sa.value;
-        sa.value = sb.value;
-        sb.value = tv;
+        [sa.value, sb.value] = [sb.value, sa.value];
     }
 
-
+    /* --- Вычисления --- */
     async function calculate() {
         const A = getMatrix("A");
         const B = getMatrix("B");
@@ -205,62 +248,59 @@
                 return;
             }
 
-            let html = "";
+            let html = `
+                <button id="toggleSolution" class="solution-toggle">Посмотреть решение</button>
+                <div id="resultBox">
+                    <h3>Результат:</h3>
+                    <table class="result-table">`;
 
-            html += `<button id="toggleSolution" class="solution-toggle">Посмотреть решение</button>`;
-
-            html += `<div id="resultBox">`;
-            html += "<h3>Результат:</h3>";
-            html += `<table class="result-table">`;
             data.result.forEach(row => {
-                html += "<tr>";
-                row.forEach(c => {
-                    html += `<td>${c}</td>`;
-                });
-                html += "</tr>";
+                html += "<tr>" + row.map(c => `<td>${c}</td>`).join("") + "</tr>";
             });
-            html += `</table>`;
-            html += `</div>`;
 
-            html += `<div id="solutionPanel" class="solution-panel"><h4>Пошаговое решение:</h4><ol>`;
+            html += `
+                    </table>
+                </div>
+                <div id="solutionPanel" class="solution-panel">
+                    <h4>Пошаговое решение:</h4>
+                    <ol>`;
+
             data.steps.forEach(step => {
-                const safe = String(step).replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                html += `<li>${safe}</li>`;
+                html += `<li>${String(step)}</li>`;
             });
-            html += `</ol></div>`;
+
+            html += `
+                    </ol>
+                </div>`;
 
             resultArea.innerHTML = html;
 
-            // подключим toggle
             const toggleBtn = document.getElementById("toggleSolution");
             const panel = document.getElementById("solutionPanel");
-            toggleBtn.addEventListener("click", function () {
-                if (panel.style.display === "none" || panel.style.display === "") {
-                    panel.style.display = "block";
-                    toggleBtn.textContent = "Скрыть решение";
-                    panel.scrollIntoView({behavior: "smooth", block: "start"});
-                } else {
-                    panel.style.display = "none";
-                    toggleBtn.textContent = "Посмотреть решение";
-                }
-            });
+            toggleBtn.onclick = () => {
+                panel.style.display =
+                    panel.style.display === "block" ? "none" : "block";
+                toggleBtn.textContent =
+                    panel.style.display === "block" ? "Скрыть решение" : "Посмотреть решение";
+            };
 
         } catch (err) {
             resultArea.innerHTML = `<p class="error-text">Ошибка: ${err}</p>`;
         }
     }
 
-
+    /* --- Автоматическое выделение текста --- */
     function enableAutoSelect() {
-        document.querySelectorAll("input[type='number']").forEach(function (input) {
-            input.onfocus = function () { this.select(); };
-            input.ondblclick = function () { this.select(); };
+        document.querySelectorAll("input[type='number']").forEach(input => {
+            input.onfocus = () => input.select();
+            input.ondblclick = () => input.select();
         });
     }
 
     generateMatrix("A");
     generateMatrix("B");
     enableAutoSelect();
+
 </script>
 </body>
 </html>

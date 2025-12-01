@@ -12,25 +12,24 @@ body {
 }
 
 
+
 header {
     width: 100%;
-    padding: 20px 0;
+    padding: 25px 40px;
     background-image: linear-gradient(to right, #1e7a32, #8fe33a);
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
 .logo-title {
-    font-family: 'Advent Pro', sans-serif;
-    font-weight: 900;
-    font-size: 85px;
+    font-family: 'Alfa Slab One', serif;
+    font-size: 90px;
     color: white;
     letter-spacing: 3px;
     margin: 0;
-    font-stretch: extra-expanded;
     text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    text-shadow: 0 3px 5px rgba(0,0,0,0.3);
 }
 
 }
