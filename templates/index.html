@@ -60,7 +60,7 @@
 </head>
 <body>
 <header>
-    <h1>Калькулятор матриц</h1>
+    <h1 style="font-size:48px; letter-spacing:4px; font-weight:800;">MATRIXa</h1>
 </header>
 
 <main>
@@ -114,15 +114,15 @@
                 <option value="invB">B⁻¹ (обратная B)</option>
             </select>
         </label>
-        <button onclick="calculate()" style="margin-left:10px; padding:8px 14px; font-weight:600;">Вычислить</button>
+        <button onclick="calculate()" class="gradient-btn">Вычислить</button>
     </div>
 
-    <!-- контейнер результата и кнопки "Посмотреть решение" -->
+
     <div id="resultArea" class="result-container" aria-live="polite"></div>
 </main>
 
 <script>
-    // --- генерация полей матрицы
+
     function generateMatrix(id) {
         const size = parseInt(document.getElementById("size" + id).value);
         const container = document.getElementById("matrix" + id);
@@ -146,7 +146,7 @@
         enableAutoSelect();
     }
 
-    // --- получение матрицы в виде массива чисел
+
     function getMatrix(id) {
         const inputs = document.querySelectorAll(`#matrix${id} input`);
         const size = Math.sqrt(inputs.length);
@@ -162,7 +162,7 @@
         return matrix;
     }
 
-    // --- обмен матрицами
+
     function swapMatrices() {
         const aInputs = document.querySelectorAll("#matrixA input");
         const bInputs = document.querySelectorAll("#matrixB input");
@@ -175,7 +175,7 @@
             aInputs[i].value = bInputs[i].value;
             bInputs[i].value = tmp;
         }
-        // Меняем размеры местами
+
         const sa = document.getElementById("sizeA");
         const sb = document.getElementById("sizeB");
         const tv = sa.value;
@@ -183,7 +183,7 @@
         sb.value = tv;
     }
 
-    // --- отправка на сервер и рендер результата + шаги
+
     async function calculate() {
         const A = getMatrix("A");
         const B = getMatrix("B");
@@ -205,13 +205,10 @@
                 return;
             }
 
-            // Построим HTML результата
             let html = "";
 
-            // Кнопка смотреть решение
             html += `<button id="toggleSolution" class="solution-toggle">Посмотреть решение</button>`;
 
-            // Результат (таблица)
             html += `<div id="resultBox">`;
             html += "<h3>Результат:</h3>";
             html += `<table class="result-table">`;
@@ -225,10 +222,8 @@
             html += `</table>`;
             html += `</div>`;
 
-            // Панель шагов (по-умолчанию скрыта)
             html += `<div id="solutionPanel" class="solution-panel"><h4>Пошаговое решение:</h4><ol>`;
             data.steps.forEach(step => {
-                // экранируем спецсимволы простым заменой
                 const safe = String(step).replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 html += `<li>${safe}</li>`;
             });
@@ -243,7 +238,6 @@
                 if (panel.style.display === "none" || panel.style.display === "") {
                     panel.style.display = "block";
                     toggleBtn.textContent = "Скрыть решение";
-                    // мягкая прокрутка к панели
                     panel.scrollIntoView({behavior: "smooth", block: "start"});
                 } else {
                     panel.style.display = "none";
@@ -256,17 +250,14 @@
         }
     }
 
-    // --- авто-выделение при фокусе
+
     function enableAutoSelect() {
         document.querySelectorAll("input[type='number']").forEach(function (input) {
-            // удаляем старые слушатели чтобы не дублировались
             input.onfocus = function () { this.select(); };
-            // также выделение при двойном клике
             input.ondblclick = function () { this.select(); };
         });
     }
 
-    // инициализация
     generateMatrix("A");
     generateMatrix("B");
     enableAutoSelect();
