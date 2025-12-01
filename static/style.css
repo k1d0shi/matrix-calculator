@@ -11,14 +11,28 @@ body {
     color: #222;
 }
 
+
 header {
-    background-color: #4CAF50;
-    color: white;
+    width: 100%;
     padding: 20px 0;
-    font-size: 40px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    background-image: linear-gradient(to right, #1e7a32, #8fe33a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-title {
+    font-family: 'Advent Pro', sans-serif;
+    font-weight: 900;
+    font-size: 85px;
+    color: white;
+    letter-spacing: 3px;
+    margin: 0;
+    font-stretch: extra-expanded;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
+
 }
 
 .matrix-container {
